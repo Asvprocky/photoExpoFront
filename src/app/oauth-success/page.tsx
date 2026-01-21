@@ -7,7 +7,7 @@ export default function OAuthSuccessPage() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/jwt/refresh", {
+    fetch("http://3.34.179.129:8080/jwt/refresh", {
       method: "POST",
       credentials: "include", // refreshToken 쿠키 전송
     })
