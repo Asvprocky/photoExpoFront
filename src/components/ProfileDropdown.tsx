@@ -49,7 +49,13 @@ export default function ProfileDropdown() {
       {/* 프로필 아이콘 */}
       <div className="cursor-pointer p-1 z-[101] transition-transform active:scale-95">
         <div className="w-8 h-8 rounded-full overflow-hidden border border-black/5 shadow-sm">
-          <Image src="/profile.JPG" alt="Profile" width={32} height={32} className="object-cover" />
+          <Image
+            src="/photoExpo_Profile_Image.jpg"
+            alt="Profile"
+            width={32}
+            height={32}
+            className="object-cover"
+          />
         </div>
       </div>
 
