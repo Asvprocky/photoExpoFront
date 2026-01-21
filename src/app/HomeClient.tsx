@@ -46,7 +46,7 @@ export default function HomeClient() {
         <div className="relative z-10 flex flex-col items-center text-center px-6">
           {/* 하단 설명 및 링크 */}
           <div className="mt-12 flex flex-col items-center gap-6">
-            <Link href="/photos" className="group flex items-center gap-3">
+            <Link href="/photo" className="group flex items-center gap-3">
               <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white border-b border-white/30 pb-1 transition-all duration-300 group-hover:border-white"></span>
             </Link>
           </div>
