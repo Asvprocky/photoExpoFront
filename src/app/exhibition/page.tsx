@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // 페이지 SSR 강제 처리
+
 import React from "react";
 import Link from "next/link";
 
