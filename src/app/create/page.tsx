@@ -312,7 +312,11 @@ export default function UnifiedUploadPage() {
       formData.append("dto", new Blob([photoDto], { type: "application/json" }), "data.json");
       // selectedFiles.forEach((file) => formData.append("image", file));
       // [수정] selectedFiles 대신 압축된 compressedFiles를 append 합니다.
-      compressedFiles.forEach((file) => formData.append("image", file));
+      compressedFiles.forEach((file, index) => {
+        // 원본 파일명을 사용하거나, 없으면 임의의 이름을 부여합니다.
+        const originalName = selectedFiles[index].name;
+        formData.append("image", file, originalName); // 📍 세 번째 인자로 파일명 전달!
+      });
 
       const photoRes = await authFetch(`${UPLOAD_URL}/photo/upload`, {
         method: "POST",
