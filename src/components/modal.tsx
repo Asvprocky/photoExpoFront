@@ -28,13 +28,24 @@ interface Comment {
 export default function Modal({ children, title, user, photoId, exhibitionId }: ModalProps) {
   const isPhoto = !!photoId;
   const isExhibition = !!exhibitionId && !photoId;
+  const router = useRouter();
+  const overlay = useRef<HTMLDivElement>(null);
+  // --- [확대 관련 상태 추가] ---
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomedImgSrc, setZoomedImgSrc] = useState("");
+
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [comment, setComment] = useState("");
+
+  const onDismiss = () => router.back();
+  const API_BASE_URL = "http://3.34.179.129:8080";
 
   if (!photoId && !exhibitionId) {
     console.error(" Modal에 photoId 또는 exhibitionId가 필요합니다");
     return null;
   }
-
-  const API_BASE_URL = "http://3.34.179.129:8080";
 
   // --- 추가: 토큰 가져오기 함수 ---
   const getAuthHeader = (): Record<string, string> => {
@@ -48,20 +59,6 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
     if (typeof window === "undefined") return false;
     return !!localStorage.getItem("accessToken");
   };
-
-  const router = useRouter();
-  const overlay = useRef<HTMLDivElement>(null);
-
-  // --- [확대 관련 상태 추가] ---
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomedImgSrc, setZoomedImgSrc] = useState("");
-
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [comment, setComment] = useState("");
-
-  const onDismiss = () => router.back();
 
   // 유저 정보 요청시 모달 닫기
   const handleUserClick = (targetUserId: number) => {
@@ -89,7 +86,7 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
       window.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "auto";
     };
-  }, [isZoomed]);
+  }, [isZoomed, onDismiss]);
 
   // --- [사진 클릭 감지 핸들러] ---
   // children 내부의 이미지가 클릭되면 이 함수가 실행됩니다.

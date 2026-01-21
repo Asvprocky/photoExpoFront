@@ -52,9 +52,6 @@ export default function JoinPage() {
   const nameRegex = /^[a-zA-Z가-힣]+$/; // 오직 한글/영문 (숫자 불가)
   const nicknameRegex = /^(?=.*[a-zA-Z가-힣])[a-zA-Z0-9가-힣]+$/; // 문자 포함 필수 (숫자만 있는 경우 차단)
 
-  // 정규표현식: 영문, 숫자, 한글만 허용 (공백/특수문자/이모지 불가)
-  const charRegex = /^[a-zA-Z0-9가-힣]+$/;
-
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) router.replace("/");

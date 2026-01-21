@@ -113,14 +113,13 @@ export default function UnifiedUploadPage() {
   const [template, setTemplate] = useState<string>("default");
   const [loading, setLoading] = useState(false);
   const [descMap, setDescMap] = useState<Record<number, { text: string; align: string }[]>>({});
+  const currentStyle = TEMPLATE_CONFIG[template] || TEMPLATE_CONFIG.default;
 
-  // 📍 에러 상태 통합 관리
+  //  에러 상태 통합 관리
   const [errors, setErrors] = useState({
     title: false,
     file: false,
   });
-
-  const currentStyle = TEMPLATE_CONFIG[template] || TEMPLATE_CONFIG.default;
 
   useEffect(() => {
     if (!isExhibitionMode) {
