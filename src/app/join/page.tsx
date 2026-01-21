@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 // --- API 로직 ---
 async function checkEmailExistsFetch(email: string): Promise<boolean> {
