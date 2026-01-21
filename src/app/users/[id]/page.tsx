@@ -153,7 +153,7 @@ export default function UserPublicArchivePage() {
       {/* 상단 배너 */}
       <div className="relative h-[280px] w-full bg-gray-200 -mt-14">
         <Image
-          src="/photoExpoBanner.jpg"
+          src="/photoExpoBanner.JPG"
           alt="Banner"
           fill
           className="object-cover"
@@ -168,7 +168,7 @@ export default function UserPublicArchivePage() {
           <div className="w-full md:w-[350px] -mt-16 z-10">
             <div className="w-25 h-25 rounded-full border-[6px] border-white overflow-hidden shadow-md mb-6 bg-white relative">
               <Image
-                src="/photoExpo_Profile_Image.jpg"
+                src="/profile.JPG"
                 alt="Profile"
                 fill
                 className="object-cover"
