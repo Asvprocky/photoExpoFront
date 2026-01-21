@@ -309,7 +309,7 @@ export default function UnifiedUploadPage() {
         description: allContents,
       });
 
-      formData.append("dto", new Blob([photoDto], { type: "application/json" }));
+      formData.append("dto", new Blob([photoDto], { type: "application/json" }), "data.json");
       // selectedFiles.forEach((file) => formData.append("image", file));
       // [수정] selectedFiles 대신 압축된 compressedFiles를 append 합니다.
       compressedFiles.forEach((file) => formData.append("image", file));
