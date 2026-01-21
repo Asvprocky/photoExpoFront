@@ -6,6 +6,7 @@ import { authFetch } from "@/services/auth";
 import { TEMPLATE_CONFIG } from "../constants/templates";
 
 const BASE_URL = "/api";
+const UPLOAD_URL = "http://3.34.179.129:8080"; // 업로드 전용 (EC2 직접 연결)
 
 /* ==============================
  * 외부 컴포넌트: 개별 설명 블록
@@ -289,7 +290,7 @@ export default function UnifiedUploadPage() {
       formData.append("dto", new Blob([photoDto], { type: "application/json" }));
       selectedFiles.forEach((file) => formData.append("image", file));
 
-      const photoRes = await authFetch(`${BASE_URL}/photo/upload`, {
+      const photoRes = await authFetch(`${UPLOAD_URL}/photo/upload`, {
         method: "POST",
         body: formData,
       });
