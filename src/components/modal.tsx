@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -41,6 +40,7 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
 
   const onDismiss = () => router.back();
   const API_BASE_URL = "http://3.34.179.129:8080";
+
   useEffect(() => {
     // 1. 좋아요 정보는 사진/전시 공통으로 가져옴
     fetchLikeStatus();
