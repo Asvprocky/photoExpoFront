@@ -1,5 +1,5 @@
 // 1. 공통 서버 주소 설정
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 // 2. 타입 정의 (나중에 src/types/auth.ts로 분리하게 좋음)
 export interface JoinRequest {
