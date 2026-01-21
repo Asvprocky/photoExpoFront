@@ -18,9 +18,10 @@ export default async function PhotoDetailPage({ params }: { params: Promise<{ id
   const { id } = await params;
   let data: PhotoDetailData | null = null;
   let errorMsg = null;
+  const BASE_URL = "http://3.34.179.129:8080";
 
   try {
-    const res = await fetch(`/api/photo/${id}`, { cache: "no-store" });
+    const res = await fetch(`${BASE_URL}/photo/${id}`, { cache: "no-store" });
     if (res.ok) {
       const json = await res.json();
       data = json.data || json;
