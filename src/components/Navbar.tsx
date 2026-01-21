@@ -77,7 +77,7 @@ export default function Navbar() {
         <div className="flex-shrink-0">
           <Link href="/">
             <Image
-              src="/profile.JPG"
+              src="/PhotoExpoLogo2.png"
               alt="Logo"
               width={110}
               height={28}
