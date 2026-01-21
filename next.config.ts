@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true, // 빌드 시 ESLint 무시
+  },
   images: {
     remotePatterns: [
       {

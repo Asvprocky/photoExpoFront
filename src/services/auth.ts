@@ -28,7 +28,7 @@ export async function authFetch(url: string, options: RequestInit = {}) {
     headers["Content-Type"] = "application/json";
   }
 
-  let res = await fetch(url, {
+  const res = await fetch(url, {
     ...options,
     credentials: "include",
     headers,

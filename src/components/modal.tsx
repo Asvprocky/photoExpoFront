@@ -41,11 +41,37 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
 
   const onDismiss = () => router.back();
   const API_BASE_URL = "http://3.34.179.129:8080";
+  useEffect(() => {
+    // 1. 좋아요 정보는 사진/전시 공통으로 가져옴
+    fetchLikeStatus();
+
+    // 2. 댓글은 사진일 때만 가져옴
+    if (isPhoto) {
+      fetchComments();
+    } else {
+      setComments([]); // 전시일 때는 댓글 리스트 초기화
+    }
+  }, [photoId, exhibitionId]); // 의존성 배열 유지
 
   if (!photoId && !exhibitionId) {
     console.error(" Modal에 photoId 또는 exhibitionId가 필요합니다");
     return null;
   }
+  // ESC 키로 확대창 또는 모달 닫기
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (isZoomed) setIsZoomed(false);
+        else onDismiss();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "auto";
+    };
+  }, [isZoomed, onDismiss]);
 
   // --- 추가: 토큰 가져오기 함수 ---
   const getAuthHeader = (): Record<string, string> => {
@@ -71,22 +97,6 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
     // 이렇게 하면 Next.js의 라우팅 꼬임 현상을 무시하고 강제로 유저 페이지를 깨끗하게 띄웁니다.
     window.open(`/users/${targetUserId}`, "_blank", "noopener,noreferrer");
   };
-
-  // ESC 키로 확대창 또는 모달 닫기
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isZoomed) setIsZoomed(false);
-        else onDismiss();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "auto";
-    };
-  }, [isZoomed, onDismiss]);
 
   // --- [사진 클릭 감지 핸들러] ---
   // children 내부의 이미지가 클릭되면 이 함수가 실행됩니다.
@@ -254,17 +264,6 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
     }
   };
 
-  useEffect(() => {
-    // 1. 좋아요 정보는 사진/전시 공통으로 가져옴
-    fetchLikeStatus();
-
-    // 2. 댓글은 사진일 때만 가져옴
-    if (isPhoto) {
-      fetchComments();
-    } else {
-      setComments([]); // 전시일 때는 댓글 리스트 초기화
-    }
-  }, [photoId, exhibitionId]); // 의존성 배열 유지
   return (
     <div
       ref={overlay}
