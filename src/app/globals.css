@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+/* 전체 배경 및 폰트 설정 (기본) */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  background-color: #ffffff;
+  padding: 15px 30px;
+  display: flex;
+  gap: 25px; /* 링크 사이 간격 */
+  border-bottom: 1px solid #eeeeee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03); /* 은은한 그림자 */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #333333;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.2s ease-in-out;
+}
+
+/* 마우스를 올렸을 때 색상 변경 */
+.navbar a:hover {
+  color: #0070f3;
+}
+
+/* 모든 요소에서 스크롤바 숨기기 */
+html,
+body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
