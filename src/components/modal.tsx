@@ -39,7 +39,7 @@ export default function Modal({ children, title, user, photoId, exhibitionId }: 
   const [comment, setComment] = useState("");
 
   const onDismiss = () => router.back();
-  const API_BASE_URL = "http://3.34.179.129:8080";
+  const API_BASE_URL = "/api";
 
   useEffect(() => {
     // 1. 좋아요 정보는 사진/전시 공통으로 가져옴
