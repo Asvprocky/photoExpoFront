@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { authFetch } from "@/services/auth";
 import { TEMPLATE_CONFIG } from "../constants/templates";
+import imageCompression from "browser-image-compression";
 
 const BASE_URL = "/api";
 const UPLOAD_URL = "http://3.34.179.129:8080"; // 업로드 전용 (EC2 직접 연결)
@@ -267,6 +268,27 @@ export default function UnifiedUploadPage() {
 
     setLoading(true);
     try {
+      // 📍 [추가] 이미지 압축 로직 시작
+      const options = {
+        maxSizeMB: 1, // 최대 용량 1MB
+        maxWidthOrHeight: 1920, // 최대 해상도
+        useWebWorker: true,
+      };
+
+      const compressedFiles = await Promise.all(
+        selectedFiles.map(async (file) => {
+          try {
+            console.log(`압축 시작: ${file.name}`);
+            const compressed = await imageCompression(file, options);
+            console.log(`압축 완료: ${compressed.size / 1024 / 1024}MB`);
+            return compressed;
+          } catch (error) {
+            console.error("압축 중 에러 발생, 원본 전송:", error);
+            return file; // 에러 시 원본 파일 반환
+          }
+        })
+      );
+      // 📍 이미지 압축 로직 끝
       let exhibitionId = null;
       const allContents = JSON.stringify(descMap);
 
@@ -288,7 +310,9 @@ export default function UnifiedUploadPage() {
       });
 
       formData.append("dto", new Blob([photoDto], { type: "application/json" }));
-      selectedFiles.forEach((file) => formData.append("image", file));
+      // selectedFiles.forEach((file) => formData.append("image", file));
+      // [수정] selectedFiles 대신 압축된 compressedFiles를 append 합니다.
+      compressedFiles.forEach((file) => formData.append("image", file));
 
       const photoRes = await authFetch(`${UPLOAD_URL}/photo/upload`, {
         method: "POST",
