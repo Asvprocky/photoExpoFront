@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { authFetch } from "@/services/auth";
 import { TEMPLATE_CONFIG } from "../constants/templates";
 
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 /* ==============================
  * 외부 컴포넌트: 개별 설명 블록

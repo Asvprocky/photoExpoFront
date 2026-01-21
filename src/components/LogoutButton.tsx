@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 async function logoutFetch() {
   await fetch(`${BASE_URL}/logout`, {

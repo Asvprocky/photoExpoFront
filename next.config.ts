@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // 빌드 시 ESLint 무시
   },
+  async rewrites() {
+    // Cors 우회 Next.js 프록시(rewrite)
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://3.34.179.129:8080/:path*",
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {

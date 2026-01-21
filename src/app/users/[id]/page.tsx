@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 interface ExhibitionInfo {
   exhibitionId: number;
@@ -56,7 +56,7 @@ export default function UserPublicArchivePage() {
         // 400 에러를 방지하기 위해 ID가 확실히 존재할 때만 호출
         if (!rawId || isNaN(Number(rawId))) return;
 
-        const res = await fetch(`http://3.34.179.129:8080/users/${rawId}`);
+        const res = await fetch(`${BASE_URL}/users/${rawId}`);
 
         // SyntaxError 방지
         // 응답이 ok(200번대)가 아니면 .json()을 호출하지 않고 텍스트로 읽음.

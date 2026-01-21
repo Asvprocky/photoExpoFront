@@ -22,7 +22,7 @@ export default async function Exhibition() {
   let errorMsg = null;
 
   try {
-    const res = await fetch("http://3.34.179.129:8080/exhibition/all", {
+    const res = await fetch("/api/exhibition/all", {
       cache: "no-store",
     });
 

@@ -57,7 +57,7 @@ export default async function ExhibitionDetail({ params }: { params: Promise<{ i
   let errorMsg: string | null = null;
 
   try {
-    const res = await fetch(`http://3.34.179.129:8080/exhibition/${id}`, {
+    const res = await fetch(`/api/exhibition/${id}`, {
       cache: "no-store",
     });
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const BASE_URL = "http://3.34.179.129:8080";
+const BASE_URL = "/api";
 
 async function getExhibitions() {
   try {
@@ -32,7 +32,7 @@ export default async function Home() {
         <div
           className="absolute inset-0 pointer-events-none z-0 opacity-80 mix-blend-multiply"
           style={{
-            backgroundImage: "url('/hero2.jpg')",
+            backgroundImage: "url('/hero.JPG')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

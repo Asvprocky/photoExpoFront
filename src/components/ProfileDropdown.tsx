@@ -22,7 +22,7 @@ export default function ProfileDropdown() {
 
     const fetchUserInfo = async () => {
       try {
-        const res = await fetch("http://3.34.179.129:8080/user/info", {
+        const res = await fetch("/api/user/info", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
