@@ -2,8 +2,10 @@ import ExhibitionDetail from "@/app/exhibition/[id]/page"; // 기존 페이지 �
 import Modal from "@/components/modal";
 
 export default async function ExhibitionModalPage({ params }: { params: Promise<{ id: string }> }) {
+  const BASE_URL = "http://3.34.179.129:8080";
+
   const { id } = await params;
-  const res = await fetch(`/api/exhibition/${id}`);
+  const res = await fetch(`${BASE_URL}/exhibition/${id}`);
   const json = await res.json();
   const data = json.data || json;
   /* [핵심 수정] 
