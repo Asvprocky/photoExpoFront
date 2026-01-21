@@ -318,7 +318,7 @@ export default function UnifiedUploadPage() {
         formData.append("image", file, originalName); // 📍 세 번째 인자로 파일명 전달!
       });
 
-      const photoRes = await authFetch(`${UPLOAD_URL}/photo/upload`, {
+      const photoRes = await authFetch(`/api/photo/upload`, {
         method: "POST",
         body: formData,
       });
