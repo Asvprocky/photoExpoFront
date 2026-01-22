@@ -6,7 +6,7 @@ import { authFetch } from "@/services/auth";
 import { TEMPLATE_CONFIG } from "../constants/templates";
 import imageCompression from "browser-image-compression";
 
-const BASE_URL = "/api";
+const BASE_URL = "http://15.165.161.240:8080";
 
 /* ==============================
  * 외부 컴포넌트: 개별 설명 블록

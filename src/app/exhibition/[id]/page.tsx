@@ -55,7 +55,7 @@ export default async function ExhibitionDetail({ params }: { params: Promise<{ i
 
   let data: ExhibitionDetailData | null = null;
   let errorMsg: string | null = null;
-  const BASE_URL = "/api";
+  const BASE_URL = "http://15.165.161.240:8080";
 
   try {
     const res = await fetch(`${BASE_URL}/exhibition/${id}`, {
