@@ -18,7 +18,7 @@ export default async function PhotoDetailPage({ params }: { params: Promise<{ id
   const { id } = await params;
   let data: PhotoDetailData | null = null;
   let errorMsg = null;
-  const BASE_URL = "http://3.34.179.129:8080";
+  const BASE_URL = "http://15.165.161.240:8080";
 
   try {
     const res = await fetch(`${BASE_URL}/photo/${id}`, { cache: "no-store" });

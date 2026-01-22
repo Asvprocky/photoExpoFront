@@ -7,7 +7,6 @@ import { TEMPLATE_CONFIG } from "../constants/templates";
 import imageCompression from "browser-image-compression";
 
 const BASE_URL = "/api";
-const UPLOAD_URL = "http://3.34.179.129:8080"; // 업로드 전용 (EC2 직접 연결)
 
 /* ==============================
  * 외부 컴포넌트: 개별 설명 블록
