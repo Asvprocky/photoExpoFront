@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { authFetch } from "@/services/auth";
 import { TEMPLATE_CONFIG } from "../constants/templates";
 import imageCompression from "browser-image-compression";
+import { useDropzone } from "react-dropzone";
 
 const BASE_URL = "/api";
 
@@ -120,6 +121,38 @@ export default function UnifiedUploadPage() {
   const [errors, setErrors] = useState({
     title: false,
     file: false,
+  });
+
+  const onDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+
+    // 1. 에러 해제
+    setErrors((prev) => ({ ...prev, file: false }));
+
+    // 2. 일반 모드 제약 사항 체크
+    if (!isExhibitionMode) {
+      if (acceptedFiles.length > 1 || selectedFiles.length >= 1) {
+        alert("일반 사진 모드에서는 1장의 사진만 올릴 수 있습니다.");
+        return;
+      }
+    }
+
+    // 3. 파일 및 프리뷰 업데이트
+    const newPreviewUrls = acceptedFiles.map((f) => URL.createObjectURL(f));
+
+    // 기존 handleFileChange 로직과 동일하게 처리
+    setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
+    setPreviews((prev) => [...prev, ...newPreviewUrls]);
+
+    // 삽입 위치가 지정되지 않은 일반 추가이므로 insertTargetRef는 무시
+    insertTargetRef.current = null;
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    noClick: true, // 버튼 클릭은 기존 ref 기능을 유지하기 위해 true로 설정
+    noKeyboard: true,
   });
 
   useEffect(() => {
@@ -253,7 +286,7 @@ export default function UnifiedUploadPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 📍 통합 유효성 검사
+    // 통합 유효성 검사
     const newErrors = {
       title: !title.trim(),
       file: selectedFiles.length === 0,
@@ -267,7 +300,7 @@ export default function UnifiedUploadPage() {
 
     setLoading(true);
     try {
-      // 📍 [추가] 이미지 압축 로직 시작
+      // [추가] 이미지 압축 로직 시작
       const options = {
         maxSizeMB: 1, // 최대 용량 1MB
         maxWidthOrHeight: 1920, // 최대 해상도
@@ -287,7 +320,7 @@ export default function UnifiedUploadPage() {
           }
         })
       );
-      // 📍 이미지 압축 로직 끝
+      // 이미지 압축 로직 끝
       let exhibitionId = null;
       const allContents = JSON.stringify(descMap);
 
@@ -310,11 +343,11 @@ export default function UnifiedUploadPage() {
 
       formData.append("dto", new Blob([photoDto], { type: "application/json" }), "data.json");
       // selectedFiles.forEach((file) => formData.append("image", file));
-      // [수정] selectedFiles 대신 압축된 compressedFiles를 append 합니다.
+      // [수정] selectedFiles 대신 압축된 compressedFiles를 append 함.
       compressedFiles.forEach((file, index) => {
         // 원본 파일명을 사용하거나, 없으면 임의의 이름을 부여합니다.
         const originalName = selectedFiles[index].name;
-        formData.append("image", file, originalName); // 📍 세 번째 인자로 파일명 전달!
+        formData.append("image", file, originalName); // 세 번째 인자로 파일명 전달!
       });
 
       const photoRes = await authFetch(`/api/photo/upload`, {
@@ -342,209 +375,234 @@ export default function UnifiedUploadPage() {
   };
 
   return (
-    <div className="pt-24 pb-20 min-h-screen bg-gray-100 font-bold">
-      <div className="max-w-[1400px] mx-auto px-6 flex md:flex-col lg:flex-row gap-8">
-        {/* --- 왼쪽 영역: 편집 캔버스 --- */}
-        <div
-          className={`flex-1 rounded-none border border-gray-200 shadow-sm min-h-[700px] flex flex-col relative transition-all duration-500 overflow-hidden ${currentStyle.container}`}
-        >
-          <div
-            className={`w-full h-full overflow-y-auto custom-scrollbar transition-all duration-500 ${currentStyle.padding}`}
-          >
-            <InsertZone index={0} onAddText={addDescription} onAddPhoto={handlePhotoAddClick} />
-            {Array.isArray(descMap[0]) &&
-              descMap[0].map((data, subIdx) => (
-                <DescriptionBlock
-                  key={`0-${subIdx}`}
-                  index={0}
-                  subIndex={subIdx}
-                  data={data}
-                  onUpdate={updateDescription}
-                  onRemove={removeDescription}
-                  currentStyle={currentStyle}
-                />
-              ))}
+    <div {...getRootProps()} className="pt-24 pb-20 min-h-screen bg-gray-100 font-bold relative">
+      {/* 1. 드롭존 전용 숨겨진 input */}
+      <input {...getInputProps()} />
 
-            {previews.map((url, idx) => (
-              <div key={`${url}-${idx}`} className="flex flex-col items-center">
-                <div className="relative group w-full flex justify-center items-center px-10">
-                  <img
-                    src={url}
-                    alt="p"
-                    className={`transition-all duration-700 shadow-md ${currentStyle.imageLayout}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveFile(idx)}
-                    className="absolute top-4 right-14 bg-black/70 hover:bg-red-600 text-white w-10 h-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <InsertZone
-                  index={idx + 1}
-                  onAddText={addDescription}
-                  onAddPhoto={handlePhotoAddClick}
-                />
-                {Array.isArray(descMap[idx + 1]) &&
-                  descMap[idx + 1].map((data, subIdx) => (
-                    <DescriptionBlock
-                      key={`${idx + 1}-${subIdx}`}
-                      index={idx + 1}
-                      subIndex={subIdx}
-                      data={data}
-                      onUpdate={updateDescription}
-                      onRemove={removeDescription}
-                      currentStyle={currentStyle}
-                    />
-                  ))}
-              </div>
-            ))}
-            <div className="h-40" />
+      {/* 전체 화면 드래그 감지 오버레이 */}
+      {isDragActive && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none animate-in zoom-in duration-300">
+          {/* 군더더기 없는 원형 + 버튼 */}
+          <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-2xl">
+            <span className="text-black text-5xl">+</span>
           </div>
         </div>
+      )}
+      <div className="pt-24 pb-20 min-h-screen bg-gray-100 font-bold">
+        <div className="max-w-[1400px] mx-auto px-6 flex md:flex-col lg:flex-row gap-8">
+          {/* --- 왼쪽 영역: 편집 캔버스 --- */}
+          <div
+            className={`flex-1 rounded-none border border-gray-200 shadow-sm min-h-[700px] flex flex-col relative transition-all duration-500 overflow-hidden ${currentStyle.container}`}
+          >
+            <div
+              className={`w-full h-full overflow-y-auto custom-scrollbar transition-all duration-500 ${currentStyle.padding}`}
+            >
+              <InsertZone index={0} onAddText={addDescription} onAddPhoto={handlePhotoAddClick} />
+              {Array.isArray(descMap[0]) &&
+                descMap[0].map((data, subIdx) => (
+                  <DescriptionBlock
+                    key={`0-${subIdx}`}
+                    index={0}
+                    subIndex={subIdx}
+                    data={data}
+                    onUpdate={updateDescription}
+                    onRemove={removeDescription}
+                    currentStyle={currentStyle}
+                  />
+                ))}
 
-        {/* --- 오른쪽 사이드바: 큐레이션 도구 --- */}
-        <div className="w-full lg:w-[320px] h-fit sticky top-24 bg-white border border-gray-200 p-7 shadow-sm">
-          <div className="mb-8 pb-4 border-b border-gray-50">
-            <h2 className="text-sm text-gray-900 uppercase tracking-widest">Curation</h2>
+              {previews.map((url, idx) => (
+                <div key={`${url}-${idx}`} className="flex flex-col items-center">
+                  <div className="relative group w-full flex justify-center items-center px-10">
+                    <img
+                      src={url}
+                      alt="p"
+                      className={`transition-all duration-700 shadow-md ${currentStyle.imageLayout}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(idx)}
+                      className="absolute top-4 right-14 bg-black/70 hover:bg-red-600 text-white w-10 h-10 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <InsertZone
+                    index={idx + 1}
+                    onAddText={addDescription}
+                    onAddPhoto={handlePhotoAddClick}
+                  />
+                  {Array.isArray(descMap[idx + 1]) &&
+                    descMap[idx + 1].map((data, subIdx) => (
+                      <DescriptionBlock
+                        key={`${idx + 1}-${subIdx}`}
+                        index={idx + 1}
+                        subIndex={subIdx}
+                        data={data}
+                        onUpdate={updateDescription}
+                        onRemove={removeDescription}
+                        currentStyle={currentStyle}
+                      />
+                    ))}
+                </div>
+              ))}
+              <div className="h-40" />
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-            {/* 1. 업로드 섹션 */}
-            <div className="space-y-3 relative mb-10">
-              <button
-                type="button"
-                onClick={() => {
-                  insertTargetRef.current = null;
-                  fileInputRef.current?.click();
-                }}
-                className={`w-full h-28 border-1 rounded-2xl bg-gray-50 hover:bg-white transition-all flex flex-col items-center justify-center gap-2 group ${
-                  errors.file ? "border-gray-400" : "border-gray-100"
-                }`}
-              >
-                <span
-                  className={`text-2xl transition-colors ${
-                    errors.file ? "text-rose-400" : "text-gray-300 group-hover:text-black"
-                  }`}
-                >
-                  +
-                </span>
-                <span
-                  className={`text-[10px] font-black uppercase tracking-widest ${
-                    errors.file ? "text-gray-700" : "text-gray-700 group-hover:text-black"
-                  }`}
-                >
-                  Add Photos
-                </span>
-              </button>
-              {/* 📍 사진 에러 메시지 */}
-              <div
-                className={`absolute -bottom-8 left-2 transition-all duration-300 ${
-                  errors.file
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 -translate-y-1 pointer-events-none"
-                }`}
-              >
-                <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest">
-                  * At least one photo is required
-                </p>
-              </div>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                className="hidden"
-              />
+          {/* --- 오른쪽 사이드바: 큐레이션 도구 --- */}
+          <div className="w-full lg:w-[320px] h-fit sticky top-24 bg-white border border-gray-200 p-7 shadow-sm">
+            <div className="mb-8 pb-4 border-b border-gray-50">
+              <h2 className="text-sm text-gray-900 uppercase tracking-widest">Curation</h2>
             </div>
 
-            {/* 2. 전시회 설정 */}
-            <div className="p-5 bg-gray-50 rounded-2xl space-y-4 overflow-hidden transition-all duration-500">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">
-                  Exhibition
-                </span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isExhibitionMode}
-                    onChange={(e) => handleToggleExhibitionMode(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-gray-400 transition-all after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"></div>
-                </label>
-              </div>
-              <div
-                className={`grid transition-all duration-500 overflow-hidden ${
-                  isExhibitionMode
-                    ? "grid-rows-[1fr] opacity-100 pt-4 border-t border-gray-100"
-                    : "grid-rows-[0fr] opacity-0 pt-0"
-                }`}
-              >
-                <div className="overflow-hidden">
-                  <div className="grid grid-cols-2 gap-2 pb-1">
-                    {["default", "classic", "grey", "art"].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setTemplate(t)}
-                        className={`py-2 rounded-lg text-[10px] font-bold border-2 transition-all uppercase ${
-                          template === t
-                            ? "bg-white border-gray-700 text-gray-700 shadow-sm"
-                            : "bg-transparent border-transparent text-gray-700 hover:text-gray-400"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+              {/* 1. 업로드 섹션 */}
+              <div className="space-y-3 relative mb-10">
+                {/* getRootProps를 여기에 주입 */}
+                <div {...getRootProps()} className="w-full">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      insertTargetRef.current = null;
+                      fileInputRef.current?.click();
+                    }}
+                    className={`w-full h-28 border-1 rounded-2xl transition-all flex flex-col items-center justify-center gap-2 group ${
+                      isDragActive
+                        ? "border-black bg-gray-100 scale-[1.02]"
+                        : "bg-gray-50 hover:bg-white border-gray-100"
+                    } ${errors.file ? "border-rose-300" : ""}`}
+                  >
+                    {/* inputProps를 버튼 안에 위치 시킴 */}
+                    <input {...getInputProps()} />
+                    <span
+                      className={`text-2xl transition-colors ${
+                        isDragActive
+                          ? "text-black animate-bounce"
+                          : errors.file
+                          ? "text-rose-400"
+                          : "text-gray-300 group-hover:text-black"
+                      }`}
+                    >
+                      {isDragActive ? "+" : "+"}
+                    </span>
+                    <span
+                      className={`text-[10px] font-black uppercase tracking-widest ${
+                        isDragActive ? "text-black" : "text-gray-700"
+                      }`}
+                    >
+                      {isDragActive ? "Drop to Upload" : "Add Photos"}
+                    </span>
+                  </button>
                 </div>
-              </div>
-            </div>
-
-            {/* 3. 제목 입력 */}
-            <div className="space-y-3 relative mb-10">
-              <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest ml-2 mb-2">
-                Title
-              </label>
-              <div className="relative">
-                <input
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                    if (e.target.value.trim()) setErrors((prev) => ({ ...prev, title: false }));
-                  }}
-                  className={`w-full bg-white border p-4 rounded-xl outline-none text-xs font-bold transition-all shadow-sm placeholder:text-gray-200 uppercase ${
-                    errors.title ? "border-gray-400" : "border-gray-100 focus:border-black"
-                  }`}
-                  placeholder="Title"
-                />
-                {/* 📍 제목 에러 메시지 */}
+                {/*  사진 에러 메시지 */}
                 <div
-                  className={`absolute -bottom-6 left-2 transition-all duration-300 ${
-                    errors.title
+                  className={`absolute -bottom-8 left-2 transition-all duration-300 ${
+                    errors.file
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 -translate-y-1 pointer-events-none"
                   }`}
                 >
                   <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest">
-                    * Title is required to publish
+                    * At least one photo is required
                   </p>
                 </div>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
               </div>
-            </div>
 
-            {/* 4. 발행 버튼 */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 text-black text-[11px] font-black rounded-xl hover:bg-gray-300 transition-all uppercase tracking-[0.2em] shadow-lg shadow-gray-200 active:scale-[0.98] disabled:bg-gray-100"
-            >
-              {loading ? "Publishing..." : "Publish"}
-            </button>
-          </form>
+              {/* 2. 전시회 설정 */}
+              <div className="p-5 bg-gray-50 rounded-2xl space-y-4 overflow-hidden transition-all duration-500">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">
+                    Exhibition
+                  </span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isExhibitionMode}
+                      onChange={(e) => handleToggleExhibitionMode(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-gray-400 transition-all after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"></div>
+                  </label>
+                </div>
+                <div
+                  className={`grid transition-all duration-500 overflow-hidden ${
+                    isExhibitionMode
+                      ? "grid-rows-[1fr] opacity-100 pt-4 border-t border-gray-100"
+                      : "grid-rows-[0fr] opacity-0 pt-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="grid grid-cols-2 gap-2 pb-1">
+                      {["default", "classic", "grey", "art"].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setTemplate(t)}
+                          className={`py-2 rounded-lg text-[10px] font-bold border-2 transition-all uppercase ${
+                            template === t
+                              ? "bg-white border-gray-700 text-gray-700 shadow-sm"
+                              : "bg-transparent border-transparent text-gray-700 hover:text-gray-400"
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. 제목 입력 */}
+              <div className="space-y-3 relative mb-10">
+                <label className="block text-[11px] font-black text-gray-700 uppercase tracking-widest ml-2 mb-2">
+                  Title
+                </label>
+                <div className="relative">
+                  <input
+                    value={title}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      if (e.target.value.trim()) setErrors((prev) => ({ ...prev, title: false }));
+                    }}
+                    className={`w-full bg-white border p-4 rounded-xl outline-none text-xs font-bold transition-all shadow-sm placeholder:text-gray-200 uppercase ${
+                      errors.title ? "border-gray-400" : "border-gray-100 focus:border-black"
+                    }`}
+                    placeholder="Title"
+                  />
+                  {/* 📍 제목 에러 메시지 */}
+                  <div
+                    className={`absolute -bottom-6 left-2 transition-all duration-300 ${
+                      errors.title
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-1 pointer-events-none"
+                    }`}
+                  >
+                    <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest">
+                      * Title is required to publish
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4. 발행 버튼 */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 text-black text-[11px] font-black rounded-xl hover:bg-gray-300 transition-all uppercase tracking-[0.2em] shadow-lg shadow-gray-200 active:scale-[0.98] disabled:bg-gray-100"
+              >
+                {loading ? "Publishing..." : "Publish"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
