@@ -100,12 +100,12 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <button
+            {/* <button
               onClick={() => handleSocialLogin("google")}
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
             >
               Google
-            </button>
+            </button> */}
             <button
               onClick={() => handleSocialLogin("naver")}
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
