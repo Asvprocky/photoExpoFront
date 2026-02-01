@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
-const BASE_URL = "http://3.34.47.91:8080";
+const BASE_URL = "/api";
 
 interface ExhibitionInfo {
   exhibitionId: number;
