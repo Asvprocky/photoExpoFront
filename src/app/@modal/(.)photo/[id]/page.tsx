@@ -2,7 +2,7 @@ import PhotoDetailPage from "@/app/photo/[id]/page"; // 기존 페이지 컴포�
 import Modal from "@/components/modal";
 
 export default async function PhotoModalPage({ params }: { params: Promise<{ id: string }> }) {
-  const BASE_URL = "http://15.165.161.240:8080";
+  const BASE_URL = "http://3.34.47.91:8080";
 
   const { id } = await params;
   const res = await fetch(`${BASE_URL}/photo/${id}`);

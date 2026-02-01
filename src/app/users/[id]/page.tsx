@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
-const BASE_URL = "/api";
+const BASE_URL = "http://3.34.47.91:8080";
 
 interface ExhibitionInfo {
   exhibitionId: number;
@@ -45,7 +45,7 @@ export default function UserPublicArchivePage() {
 
     const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-    // 📍 [강력한 방어막] 현재 브라우저 주소창의 경로 자체가 /users/숫자 인지 확인
+    //  현재 브라우저 주소창의 경로 자체가 /users/숫자 인지 확인
     // /photo/99 같은 경로에서 이 useEffect가 실행되는 것을 원천 봉쇄합니다.
     if (!window.location.pathname.includes(`/users/${rawId}`)) {
       console.log("⚠️ 유효하지 않은 경로 접근: API 요청을 취소합니다.");
