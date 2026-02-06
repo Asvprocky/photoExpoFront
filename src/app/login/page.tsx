@@ -45,7 +45,7 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = (provider: "google" | "naver") => {
-    window.location.href = `${BASE_URL}/oauth2/authorization/${provider}`;
+    window.location.href = `http://3.34.47.91:8080/oauth2/authorization/${provider}`;
   };
 
   return (
@@ -105,13 +105,13 @@ export default function LoginPage() {
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
             >
               Google
-            </button> */}
+            </button> 
             <button
               onClick={() => handleSocialLogin("naver")}
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
             >
               Naver
-            </button>
+            </button>*/}
           </div>
         </div>
 
