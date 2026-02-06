@@ -90,7 +90,7 @@ export default function LoginPage() {
         </div>
 
         {/* 소셜 로그인: 미니멀한 버튼 디자인 */}
-        <div className="space-y-6">
+        {/*<div className="space-y-6">
           <div className="relative flex items-center justify-center">
             <div className="flex-grow border-t border-gray-100"></div>
             <span className="flex-shrink mx-6 text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">
@@ -100,7 +100,7 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* <button
+            <button
               onClick={() => handleSocialLogin("google")}
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
             >
@@ -111,9 +111,9 @@ export default function LoginPage() {
               className="flex items-center justify-center py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-bold text-[11px] uppercase tracking-widest text-gray-600"
             >
               Naver
-            </button>*/}
+            </button>
           </div>
-        </div>
+        </div>*/}
 
         {/* 푸터: 하단 링크 */}
         <div className="text-center">
